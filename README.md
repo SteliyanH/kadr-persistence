@@ -137,7 +137,7 @@ breaking changes.
 
 ## Requirements
 
-Swift 6 · iOS 17 · macOS 14 · tvOS 17 · visionOS 1 · kadr 0.21+
+Swift 6 · iOS 17 · macOS 14 · tvOS 17 · visionOS 1 · kadr 1.0+
 
 ## Support
 
