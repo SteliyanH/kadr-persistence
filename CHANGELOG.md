@@ -4,6 +4,28 @@ All notable changes to KadrPersistence will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-08-28
+
+### Added
+
+- **Public initialisers on every document type.** Swift synthesises a memberwise
+  initialiser for a `public struct`, but that initialiser is `internal` — so all
+  27 mirror types here were readable from outside the module and impossible to
+  construct. A document format whose types only this package can build is half a
+  format: a migration tool, a fixture, a test in the host app, or anything that
+  writes a project without going through a `Video` all hit the same wall.
+
+  ```swift
+  let document = KadrDocument(video: VideoData(
+      clips: [.transition(TransitionData(kind: "fade", duration: .init(half), direction: nil))],
+      audioTracks: [], preset: PresetData(kind: "tiktok", ...), overlays: [],
+      crop: nil, quality: QualityData(kind: "automatic", ...), captions: []
+  ))
+  ```
+
+  Found the same way as everything else in this package's short history: by
+  consuming it from another module, where the internal doors are not there.
+
 ## [0.2.0] - 2026-08-28
 
 Adopts kadr 1.0.
