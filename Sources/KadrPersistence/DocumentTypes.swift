@@ -48,6 +48,16 @@ public struct TimeRangeData: Codable, Sendable, Equatable {
 // MARK: - Geometry and colour
 
 public struct PositionData: Codable, Sendable, Equatable {
+
+    public init(
+        kind: String,
+        x: Double,
+        y: Double
+    ) {
+        self.kind = kind
+        self.x = x
+        self.y = y
+    }
     public let kind: String     // normalized | pixels | percent
     public let x: Double
     public let y: Double
@@ -69,6 +79,18 @@ public indirect enum SizeData: Codable, Sendable, Equatable {
 /// alpha is meaningless. A document cannot: a translucent title background is a
 /// design decision, and reopening it opaque is a visible regression.
 public struct ColorData: Codable, Sendable, Equatable {
+
+    public init(
+        red: Double,
+        green: Double,
+        blue: Double,
+        alpha: Double
+    ) {
+        self.red = red
+        self.green = green
+        self.blue = blue
+        self.alpha = alpha
+    }
     public let red: Double
     public let green: Double
     public let blue: Double
@@ -76,11 +98,31 @@ public struct ColorData: Codable, Sendable, Equatable {
 }
 
 public struct SizeOffsetData: Codable, Sendable, Equatable {
+
+    public init(
+        width: Double,
+        height: Double
+    ) {
+        self.width = width
+        self.height = height
+    }
     public let width: Double
     public let height: Double
 }
 
 public struct TransformData: Codable, Sendable, Equatable {
+
+    public init(
+        center: PositionData,
+        rotation: Double,
+        scale: Double,
+        anchor: String
+    ) {
+        self.center = center
+        self.rotation = rotation
+        self.scale = scale
+        self.anchor = anchor
+    }
     public let center: PositionData
     public let rotation: Double
     public let scale: Double
@@ -90,11 +132,27 @@ public struct TransformData: Codable, Sendable, Equatable {
 // MARK: - Animation
 
 public struct KeyframeData<Value: Codable & Sendable & Equatable>: Codable, Sendable, Equatable {
+
+    public init(
+        time: TimeData,
+        value: Value
+    ) {
+        self.time = time
+        self.value = value
+    }
     public let time: TimeData
     public let value: Value
 }
 
 public struct AnimationData<Value: Codable & Sendable & Equatable>: Codable, Sendable, Equatable {
+
+    public init(
+        keyframes: [KeyframeData<Value>],
+        timing: TimingData
+    ) {
+        self.keyframes = keyframes
+        self.timing = timing
+    }
     public let keyframes: [KeyframeData<Value>]
     public let timing: TimingData
 }
@@ -105,6 +163,20 @@ public struct AnimationData<Value: Codable & Sendable & Equatable>: Codable, Sen
 /// unknown future curve decodes as a readable name instead of failing the whole
 /// document.
 public struct TimingData: Codable, Sendable, Equatable {
+
+    public init(
+        kind: String,
+        p1x: Double? = nil,
+        p1y: Double? = nil,
+        p2x: Double? = nil,
+        p2y: Double? = nil
+    ) {
+        self.kind = kind
+        self.p1x = p1x
+        self.p1y = p1y
+        self.p2x = p2x
+        self.p2y = p2y
+    }
     public let kind: String     // linear | easeIn | easeOut | easeInOut | cubicBezier
     public let p1x: Double?
     public let p1y: Double?
@@ -115,6 +187,24 @@ public struct TimingData: Codable, Sendable, Equatable {
 // MARK: - Filters
 
 public struct FilterData: Codable, Sendable, Equatable {
+
+    public init(
+        kind: String,
+        scalar: Double? = nil,
+        url: String? = nil,
+        red: Double? = nil,
+        green: Double? = nil,
+        blue: Double? = nil,
+        threshold: Double? = nil
+    ) {
+        self.kind = kind
+        self.scalar = scalar
+        self.url = url
+        self.red = red
+        self.green = green
+        self.blue = blue
+        self.threshold = threshold
+    }
     public let kind: String
     public let scalar: Double?
     /// LUT file location.
@@ -128,16 +218,44 @@ public struct FilterData: Codable, Sendable, Equatable {
 // MARK: - Text
 
 public struct TextStrokeData: Codable, Sendable, Equatable {
+
+    public init(
+        width: Double,
+        color: ColorData
+    ) {
+        self.width = width
+        self.color = color
+    }
     public let width: Double
     public let color: ColorData
 }
 
 public struct TextShadowData: Codable, Sendable, Equatable {
+
+    public init(
+        offset: SizeOffsetData,
+        blur: Double
+    ) {
+        self.offset = offset
+        self.blur = blur
+    }
     public let offset: SizeOffsetData
     public let blur: Double
 }
 
 public struct ShadowData: Codable, Sendable, Equatable {
+
+    public init(
+        color: ColorData,
+        radius: Double,
+        offset: SizeOffsetData,
+        opacity: Double
+    ) {
+        self.color = color
+        self.radius = radius
+        self.offset = offset
+        self.opacity = opacity
+    }
     public let color: ColorData
     public let radius: Double
     public let offset: SizeOffsetData
@@ -145,6 +263,24 @@ public struct ShadowData: Codable, Sendable, Equatable {
 }
 
 public struct TextStyleData: Codable, Sendable, Equatable {
+
+    public init(
+        fontName: String? = nil,
+        fontSize: Double,
+        color: ColorData,
+        alignment: String,
+        weight: String,
+        stroke: TextStrokeData? = nil,
+        shadow: TextShadowData? = nil
+    ) {
+        self.fontName = fontName
+        self.fontSize = fontSize
+        self.color = color
+        self.alignment = alignment
+        self.weight = weight
+        self.stroke = stroke
+        self.shadow = shadow
+    }
     public let fontName: String?
     public let fontSize: Double
     public let color: ColorData
@@ -157,6 +293,26 @@ public struct TextStyleData: Codable, Sendable, Equatable {
 // MARK: - Overlays
 
 public struct TextOverlayData: Codable, Sendable, Equatable {
+
+    public init(
+        text: String,
+        style: TextStyleData,
+        position: PositionData,
+        size: SizeData? = nil,
+        anchor: String,
+        opacity: Double,
+        layerID: String? = nil,
+        visibilityRange: TimeRangeData? = nil
+    ) {
+        self.text = text
+        self.style = style
+        self.position = position
+        self.size = size
+        self.anchor = anchor
+        self.opacity = opacity
+        self.layerID = layerID
+        self.visibilityRange = visibilityRange
+    }
     public let text: String
     public let style: TextStyleData
     public let position: PositionData
@@ -168,6 +324,28 @@ public struct TextOverlayData: Codable, Sendable, Equatable {
 }
 
 public struct ImageOverlayData: Codable, Sendable, Equatable {
+
+    public init(
+        imageToken: String,
+        position: PositionData,
+        size: SizeData? = nil,
+        anchor: String,
+        opacity: Double,
+        layerID: String? = nil,
+        visibilityRange: TimeRangeData? = nil,
+        positionAnimation: AnimationData<PositionData>? = nil,
+        sizeAnimation: AnimationData<SizeData>? = nil
+    ) {
+        self.imageToken = imageToken
+        self.position = position
+        self.size = size
+        self.anchor = anchor
+        self.opacity = opacity
+        self.layerID = layerID
+        self.visibilityRange = visibilityRange
+        self.positionAnimation = positionAnimation
+        self.sizeAnimation = sizeAnimation
+    }
     /// An ``ImageStore`` token, not the pixels.
     public let imageToken: String
     public let position: PositionData
@@ -181,6 +359,32 @@ public struct ImageOverlayData: Codable, Sendable, Equatable {
 }
 
 public struct StickerOverlayData: Codable, Sendable, Equatable {
+
+    public init(
+        imageToken: String,
+        position: PositionData,
+        size: SizeData? = nil,
+        anchor: String,
+        opacity: Double,
+        layerID: String? = nil,
+        rotation: Double,
+        shadow: ShadowData? = nil,
+        visibilityRange: TimeRangeData? = nil,
+        positionAnimation: AnimationData<PositionData>? = nil,
+        sizeAnimation: AnimationData<SizeData>? = nil
+    ) {
+        self.imageToken = imageToken
+        self.position = position
+        self.size = size
+        self.anchor = anchor
+        self.opacity = opacity
+        self.layerID = layerID
+        self.rotation = rotation
+        self.shadow = shadow
+        self.visibilityRange = visibilityRange
+        self.positionAnimation = positionAnimation
+        self.sizeAnimation = sizeAnimation
+    }
     public let imageToken: String
     public let position: PositionData
     public let size: SizeData?
@@ -203,6 +407,44 @@ public enum OverlayData: Codable, Sendable, Equatable {
 // MARK: - Clips
 
 public struct VideoClipData: Codable, Sendable, Equatable {
+
+    public init(
+        url: String,
+        trimRange: TimeRangeData? = nil,
+        isReversed: Bool,
+        isMuted: Bool,
+        volumeLevel: Double,
+        replacementAudioURL: String? = nil,
+        speedRate: Double,
+        speedCurve: AnimationData<Double>? = nil,
+        filters: [FilterData],
+        filterIDs: [String],
+        filterAnimations: [AnimationData<Double>?],
+        clipID: String? = nil,
+        startTime: TimeData? = nil,
+        transform: TransformData? = nil,
+        transformAnimation: AnimationData<TransformData>? = nil,
+        opacity: Double? = nil,
+        opacityAnimation: AnimationData<Double>? = nil
+    ) {
+        self.url = url
+        self.trimRange = trimRange
+        self.isReversed = isReversed
+        self.isMuted = isMuted
+        self.volumeLevel = volumeLevel
+        self.replacementAudioURL = replacementAudioURL
+        self.speedRate = speedRate
+        self.speedCurve = speedCurve
+        self.filters = filters
+        self.filterIDs = filterIDs
+        self.filterAnimations = filterAnimations
+        self.clipID = clipID
+        self.startTime = startTime
+        self.transform = transform
+        self.transformAnimation = transformAnimation
+        self.opacity = opacity
+        self.opacityAnimation = opacityAnimation
+    }
     public let url: String
     public let trimRange: TimeRangeData?
     public let isReversed: Bool
@@ -225,6 +467,30 @@ public struct VideoClipData: Codable, Sendable, Equatable {
 }
 
 public struct ImageClipData: Codable, Sendable, Equatable {
+
+    public init(
+        imageToken: String,
+        duration: TimeData,
+        backgroundColor: ColorData? = nil,
+        audioURL: String? = nil,
+        clipID: String? = nil,
+        startTime: TimeData? = nil,
+        transform: TransformData? = nil,
+        transformAnimation: AnimationData<TransformData>? = nil,
+        opacity: Double? = nil,
+        opacityAnimation: AnimationData<Double>? = nil
+    ) {
+        self.imageToken = imageToken
+        self.duration = duration
+        self.backgroundColor = backgroundColor
+        self.audioURL = audioURL
+        self.clipID = clipID
+        self.startTime = startTime
+        self.transform = transform
+        self.transformAnimation = transformAnimation
+        self.opacity = opacity
+        self.opacityAnimation = opacityAnimation
+    }
     /// An ``ImageStore`` token, not the pixels.
     public let imageToken: String
     public let duration: TimeData
@@ -239,6 +505,30 @@ public struct ImageClipData: Codable, Sendable, Equatable {
 }
 
 public struct TitleSequenceData: Codable, Sendable, Equatable {
+
+    public init(
+        text: String,
+        style: TextStyleData,
+        backgroundColor: ColorData,
+        duration: TimeData,
+        clipID: String? = nil,
+        startTime: TimeData? = nil,
+        transform: TransformData? = nil,
+        transformAnimation: AnimationData<TransformData>? = nil,
+        opacity: Double? = nil,
+        opacityAnimation: AnimationData<Double>? = nil
+    ) {
+        self.text = text
+        self.style = style
+        self.backgroundColor = backgroundColor
+        self.duration = duration
+        self.clipID = clipID
+        self.startTime = startTime
+        self.transform = transform
+        self.transformAnimation = transformAnimation
+        self.opacity = opacity
+        self.opacityAnimation = opacityAnimation
+    }
     public let text: String
     public let style: TextStyleData
     public let backgroundColor: ColorData
@@ -252,12 +542,34 @@ public struct TitleSequenceData: Codable, Sendable, Equatable {
 }
 
 public struct TransitionData: Codable, Sendable, Equatable {
+
+    public init(
+        kind: String,
+        duration: TimeData,
+        direction: String?   // slide only
+    ) {
+        self.kind = kind
+        self.duration = duration
+        self.direction = direction
+    }
     public let kind: String         // fade | slide | dissolve
     public let duration: TimeData
     public let direction: String?   // slide only
 }
 
 public struct TrackData: Codable, Sendable, Equatable {
+
+    public init(
+        name: String? = nil,
+        startTime: TimeData? = nil,
+        opacityFactor: Double,
+        clips: [ClipData]
+    ) {
+        self.name = name
+        self.startTime = startTime
+        self.opacityFactor = opacityFactor
+        self.clips = clips
+    }
     public let name: String?
     public let startTime: TimeData?
     public let opacityFactor: Double
@@ -280,12 +592,48 @@ public indirect enum ClipData: Codable, Sendable, Equatable {
 // MARK: - Audio
 
 public struct VolumeRampData: Codable, Sendable, Equatable {
+
+    public init(
+        startVolume: Double,
+        endVolume: Double,
+        range: TimeRangeData
+    ) {
+        self.startVolume = startVolume
+        self.endVolume = endVolume
+        self.range = range
+    }
     public let startVolume: Double
     public let endVolume: Double
     public let range: TimeRangeData
 }
 
 public struct AudioTrackData: Codable, Sendable, Equatable {
+
+    public init(
+        url: String,
+        volumeLevel: Double,
+        fadeInDuration: TimeData,
+        fadeOutDuration: TimeData,
+        duckingLevel: Double? = nil,
+        startTime: TimeData? = nil,
+        explicitDuration: TimeData? = nil,
+        crossfadeDuration: TimeData? = nil,
+        volumeRamps: [VolumeRampData],
+        speedRate: Double,
+        pitchAlgorithm: String   // spectral | timeDomain | varispeed
+    ) {
+        self.url = url
+        self.volumeLevel = volumeLevel
+        self.fadeInDuration = fadeInDuration
+        self.fadeOutDuration = fadeOutDuration
+        self.duckingLevel = duckingLevel
+        self.startTime = startTime
+        self.explicitDuration = explicitDuration
+        self.crossfadeDuration = crossfadeDuration
+        self.volumeRamps = volumeRamps
+        self.speedRate = speedRate
+        self.pitchAlgorithm = pitchAlgorithm
+    }
     public let url: String
     public let volumeLevel: Double
     public let fadeInDuration: TimeData
@@ -302,6 +650,20 @@ public struct AudioTrackData: Codable, Sendable, Equatable {
 // MARK: - Composition
 
 public struct PresetData: Codable, Sendable, Equatable {
+
+    public init(
+        kind: String,
+        width: Int? = nil,
+        height: Int? = nil,
+        frameRate: Int? = nil,
+        codec: String? = nil
+    ) {
+        self.kind = kind
+        self.width = width
+        self.height = height
+        self.frameRate = frameRate
+        self.codec = codec
+    }
     public let kind: String
     public let width: Int?
     public let height: Int?
@@ -310,23 +672,69 @@ public struct PresetData: Codable, Sendable, Equatable {
 }
 
 public struct QualityData: Codable, Sendable, Equatable {
+
+    public init(
+        kind: String,
+        bitrate: Int? = nil,
+        fileSizeBytes: Int? = nil
+    ) {
+        self.kind = kind
+        self.bitrate = bitrate
+        self.fileSizeBytes = fileSizeBytes
+    }
     public let kind: String     // automatic | bitrate | fileSize
     public let bitrate: Int?
     public let fileSizeBytes: Int?
 }
 
 public struct CropData: Codable, Sendable, Equatable {
+
+    public init(
+        position: PositionData,
+        size: SizeData,
+        anchor: String
+    ) {
+        self.position = position
+        self.size = size
+        self.anchor = anchor
+    }
     public let position: PositionData
     public let size: SizeData
     public let anchor: String
 }
 
 public struct CaptionData: Codable, Sendable, Equatable {
+
+    public init(
+        text: String,
+        timeRange: TimeRangeData
+    ) {
+        self.text = text
+        self.timeRange = timeRange
+    }
     public let text: String
     public let timeRange: TimeRangeData
 }
 
 public struct VideoData: Codable, Sendable, Equatable {
+
+    public init(
+        clips: [ClipData],
+        audioTracks: [AudioTrackData],
+        preset: PresetData,
+        overlays: [OverlayData],
+        crop: CropData? = nil,
+        quality: QualityData,
+        captions: [CaptionData]
+    ) {
+        self.clips = clips
+        self.audioTracks = audioTracks
+        self.preset = preset
+        self.overlays = overlays
+        self.crop = crop
+        self.quality = quality
+        self.captions = captions
+    }
     public let clips: [ClipData]
     public let audioTracks: [AudioTrackData]
     public let preset: PresetData
