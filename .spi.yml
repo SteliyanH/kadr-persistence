@@ -1,0 +1,6 @@
+# Opts this package in to Swift Package Index documentation hosting.
+version: 1
+builder:
+  configs:
+    - platform: ios
+      documentation_targets: [KadrPersistence]

@@ -1,0 +1,19 @@
+name: CI
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+jobs:
+  test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - run: swift test --no-parallel
+
+      # `swift test` compiles for macOS only. kadr-audio shipped six releases
+      # whose iOS slice did not compile because nothing here built it.
+      - name: Build for iOS
+        run: xcodebuild -scheme KadrPersistence -destination 'generic/platform=iOS' -quiet build

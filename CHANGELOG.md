@@ -1,0 +1,55 @@
+# Changelog
+
+All notable changes to KadrPersistence will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
+
+## [0.1.0] - 2026-08-28
+
+First release. A document format for kadr compositions, and the encoder that
+refuses to lie about what it saved.
+
+### Added
+
+- **`KadrCoding`** — `data(for:)` / `video(from:)` for JSON, `encode(_:)` /
+  `decode(_:)` for the document itself.
+
+- **`KadrDocument`** — the format. Plain JSON, sorted keys, schema-versioned.
+  Times are stored as `value`/`timescale` rather than seconds, so a frame boundary
+  survives the round trip exactly.
+
+- **`Lossy` and refusal-by-default.** Encoding throws rather than dropping content
+  a file cannot hold — compositors, custom timing closures, text animations, and
+  images with no `ImageStore`. `lossyContent(in:)` asks without saving;
+  `allowingLoss: true` saves anyway and reports what was left behind.
+
+- **`ImageStore`** — how the host names its images, so image clips and image
+  overlays can round-trip by reference rather than by embedding megabytes of
+  base64.
+
+- **`PersistenceError`** — `LocalizedError` throughout, with a
+  `recoverySuggestion` where there is one to give.
+
+### Covered
+
+Video clips, image clips, title sequences, transitions, and nested tracks. Trims,
+reversal, muting, replacement audio, volume, speed and speed curves. Filters with
+their `FilterID`s intact. Transforms, opacity, and their animations. Audio tracks
+with volume ramps and pitch algorithm. Text, image, and sticker overlays. Crop,
+captions, preset, and export quality.
+
+### Notes
+
+- **The completeness guard.** `CompletenessTests` reflects over each kadr type and
+  asserts its stored properties are exactly the set this package handles. It is
+  the only test here that can catch the bug this package exists to prevent: a
+  field missing from *both* sides of a round-trip comparison compares equal, so no
+  value-based test can see it. It caught six missing `Video` fields — including
+  `quality`, an entire kadr release — on its first run, in this package's own
+  first draft.
+
+- **Four kadr gaps were found by building this**, and fixed upstream in kadr
+  0.21.0: `AudioBuilder` had no `buildArray`, so audio tracks could not be
+  restored from an array; `FilterID`s could be read but never written back;
+  `Video { }` did not compile; and `Preset` was not `Equatable`. Each was
+  invisible from inside kadr, where the internal initialisers are in reach.
