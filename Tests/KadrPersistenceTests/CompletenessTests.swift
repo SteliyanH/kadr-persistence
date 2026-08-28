@@ -202,3 +202,71 @@ struct CompletenessTests {
         )
     }
 }
+
+/// A client must be able to *construct* a document, not only read one.
+///
+/// Swift synthesises a memberwise initialiser for a `public struct`, but that
+/// initialiser is `internal` — invisible outside the module. Every mirror type
+/// here was therefore readable and un-constructible from outside, which this
+/// package found the same way it finds everything else: by being consumed.
+struct PublicConstructionTests {
+
+    @Test("The document types can be built from outside the module")
+    func documentIsConstructible() throws {
+        let document = KadrDocument(video: VideoData(
+            clips: [.transition(TransitionData(
+                kind: "fade",
+                duration: TimeData(CMTime(seconds: 0.5, preferredTimescale: 600)),
+                direction: nil
+            ))],
+            audioTracks: [],
+            preset: PresetData(kind: "tiktok", width: nil, height: nil, frameRate: nil, codec: nil),
+            overlays: [],
+            crop: nil,
+            quality: QualityData(kind: "bitrate", bitrate: 4_000_000, fileSizeBytes: nil),
+            captions: [CaptionData(
+                text: "hi",
+                timeRange: TimeRangeData(CMTimeRange(
+                    start: .zero,
+                    duration: CMTime(seconds: 1, preferredTimescale: 600)
+                ))
+            )]
+        ))
+        let video = try KadrCoding.decode(document)
+        #expect(video.clips.count == 1)
+        #expect(video.preset == .tiktok)
+        #expect(video.quality == .bitrate(4_000_000))
+        #expect(video.captions.count == 1)
+    }
+
+    @Test("A hand-built document survives a JSON round trip")
+    func handBuiltDocumentRoundTrips() throws {
+        let style = TextStyleData(
+            fontName: "Menlo",
+            fontSize: 32,
+            color: ColorData(red: 1, green: 0.5, blue: 0, alpha: 1),
+            alignment: "center",
+            weight: "bold",
+            stroke: TextStrokeData(width: 2, color: ColorData(red: 0, green: 0, blue: 0, alpha: 1)),
+            shadow: TextShadowData(offset: SizeOffsetData(width: 1, height: 2), blur: 3)
+        )
+        let document = KadrDocument(video: VideoData(
+            clips: [.title(TitleSequenceData(
+                text: "Built by hand",
+                style: style,
+                backgroundColor: ColorData(red: 0, green: 0, blue: 0, alpha: 1),
+                duration: TimeData(CMTime(seconds: 2, preferredTimescale: 600)),
+                clipID: "t", startTime: nil, transform: nil,
+                transformAnimation: nil, opacity: nil, opacityAnimation: nil
+            ))],
+            audioTracks: [], preset: PresetData(kind: "auto", width: nil, height: nil, frameRate: nil, codec: nil),
+            overlays: [], crop: nil,
+            quality: QualityData(kind: "automatic", bitrate: nil, fileSizeBytes: nil),
+            captions: []
+        ))
+        let encoder = JSONEncoder(); encoder.outputFormatting = [.sortedKeys]
+        let data = try encoder.encode(document)
+        let restored = try JSONDecoder().decode(KadrDocument.self, from: data)
+        #expect(restored == document)
+    }
+}
