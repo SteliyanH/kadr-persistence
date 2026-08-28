@@ -238,17 +238,15 @@ extension KadrCoding {
             }
             return .lut(try LUT(url: url))
         case "chromaKey":
-            // Round-tripped through PlatformColor because `ChromaKey` cannot be
-            // rebuilt from its own public properties: it exposes `color` as
-            // `ColorComponents` but only initialises from a `PlatformColor`.
-            // Worth an additive `ChromaKey(color: ColorComponents, threshold:)`
-            // upstream; until then this is lossless anyway, since ColorComponents
-            // carries no alpha.
-            let colour = PlatformColor(
-                red: CGFloat(data.red ?? 0), green: CGFloat(data.green ?? 1),
-                blue: CGFloat(data.blue ?? 0), alpha: 1
-            )
-            return .chromaKey(ChromaKey(color: colour, threshold: data.threshold ?? 0.3))
+            // Straight through the components, since kadr 1.0. Until then this
+            // had to detour via `PlatformColor` — `ChromaKey` exposed `color` as
+            // `ColorComponents` but only initialised from a platform colour, so
+            // it could not be rebuilt from its own public properties. That
+            // detour was lossy on macOS for anything outside sRGB.
+            return .chromaKey(ChromaKey(
+                color: ColorComponents(r: data.red ?? 0, g: data.green ?? 1, b: data.blue ?? 0),
+                threshold: data.threshold ?? 0.3
+            ))
         default:
             throw PersistenceError.malformed("Unknown filter “\(data.kind)”.")
         }

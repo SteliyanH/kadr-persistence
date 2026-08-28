@@ -4,6 +4,22 @@ All notable changes to KadrPersistence will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-08-28
+
+Adopts kadr 1.0.
+
+### Changed
+
+- **kadr floor raised to `1.0.0`, pinned with `from:`.** No API change: kadr 1.0
+  is a stability commitment with no code in it. The pin style matters more than
+  the number — pre-1.0 this package accepted exactly one kadr minor, which meant
+  an app using both had to match it exactly.
+
+- **`ChromaKey` now round-trips through its own properties.** kadr 1.0 added
+  `ChromaKey(color:threshold:)` taking `ColorComponents` — the gap this package
+  reported in its own ROADMAP. Decoding no longer detours through
+  `PlatformColor`, which was lossy on macOS for anything outside sRGB.
+
 ## [0.1.0] - 2026-08-28
 
 First release. A document format for kadr compositions, and the encoder that
