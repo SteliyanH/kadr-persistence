@@ -31,7 +31,6 @@ Where this package is going, and what it is deliberately not doing.
   (`FadeIn`, `SlideIn`, `ScaleUp`) are plain data — it is the protocol that makes
   them opaque. A `TextAnimationKind` enum in kadr would let all three round-trip
   and leave only genuinely custom ones lossy.
-- Whether `ChromaKey` should gain `init(color: ColorComponents, threshold:)`. It
-  exposes `color` as `ColorComponents` but only initialises from `PlatformColor`,
-  so it cannot be rebuilt from its own public properties. Lossless here only
-  because `ColorComponents` carries no alpha.
+- ~~Whether `ChromaKey` should gain `init(color: ColorComponents, threshold:)`.~~
+  **Answered: yes, and it shipped in kadr 1.0.** Decoding no longer detours
+  through `PlatformColor`, which was lossy on macOS outside sRGB.
