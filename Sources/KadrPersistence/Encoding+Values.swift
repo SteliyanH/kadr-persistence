@@ -309,7 +309,15 @@ extension KadrCoding {
         switch overlay {
         case let text as TextOverlay:
             let at = text.layerID.map { "overlay “\($0.rawValue)”" } ?? "the text “\(text.text.prefix(24))”"
-            if text.textAnimation != nil { context.note(.textAnimation, at: at) }
+            // Encode the animation when it is one of the conformers kadr ships;
+            // report it only when it is genuinely something this version cannot
+            // write down. Before v0.4 every animation was reported, which made
+            // an overlay with a stock fade unsaveable.
+            var animation: TextAnimationData?
+            if let existing = text.textAnimation {
+                animation = textAnimationData(existing)
+                if animation == nil { context.note(.textAnimation, at: at) }
+            }
             return .text(TextOverlayData(
                 text: text.text,
                 style: textStyleData(text.style),
@@ -318,7 +326,8 @@ extension KadrCoding {
                 anchor: anchorName(text.anchor),
                 opacity: text.opacity,
                 layerID: text.layerID?.rawValue,
-                visibilityRange: text.visibilityRange.map(TimeRangeData.init)
+                visibilityRange: text.visibilityRange.map(TimeRangeData.init),
+                textAnimation: animation
             ))
         case let image as ImageOverlay:
             let at = image.layerID.map { "overlay “\($0.rawValue)”" } ?? "image overlay \(index + 1)"
@@ -372,6 +381,9 @@ extension KadrCoding {
             if let size = t.size { overlay = overlay.size(self.size(from: size)) }
             if let id = t.layerID { overlay = overlay.id(LayerID(id)) }
             if let range = t.visibilityRange { overlay = overlay.visible(during: range.range) }
+            if let animation = t.textAnimation.flatMap(textAnimation(from:)) {
+                overlay = overlay.animation(animation)
+            }
             return video.overlay(overlay)
         case let .image(i):
             var overlay = ImageOverlay(try context.image(for: i.imageToken))
@@ -422,6 +434,78 @@ extension KadrCoding {
             if let id = s.layerID { overlay = overlay.id(LayerID(id)) }
             if let range = s.visibilityRange { overlay = overlay.visible(during: range.range) }
             return video.overlay(overlay)
+        }
+    }
+
+    // MARK: - Text animations
+
+    /// The document form of a text animation, or `nil` when the conformer is
+    /// one this version does not know.
+    ///
+    /// `TextAnimation` is a protocol with an open set of conformers, so this is
+    /// a downcast rather than a `switch`. The three below are the ones kadr
+    /// ships; a fourth — or a consumer's own — falls through to `nil` and is
+    /// reported as ``Lossy/Kind/textAnimation`` rather than guessed at.
+    static func textAnimationData(_ animation: any TextAnimation) -> TextAnimationData? {
+        switch animation {
+        case let fade as FadeIn:
+            return TextAnimationData(
+                kind: "fadeIn",
+                durationValue: fade.duration.value, durationTimescale: fade.duration.timescale,
+                beginTime: fade.beginTime, from: Double(fade.from), direction: nil
+            )
+        case let slide as SlideIn:
+            return TextAnimationData(
+                kind: "slideIn",
+                durationValue: slide.duration.value, durationTimescale: slide.duration.timescale,
+                beginTime: slide.beginTime, from: nil,
+                direction: textSlideDirectionName(slide.direction)
+            )
+        case let scale as ScaleUp:
+            return TextAnimationData(
+                kind: "scaleUp",
+                durationValue: scale.duration.value, durationTimescale: scale.duration.timescale,
+                beginTime: scale.beginTime, from: Double(scale.from), direction: nil
+            )
+        default:
+            return nil
+        }
+    }
+
+    static func textAnimation(from data: TextAnimationData) -> (any TextAnimation)? {
+        let duration = data.duration.time
+        switch data.kind {
+        case "fadeIn":
+            return FadeIn(duration: duration, from: Float(data.from ?? 0), beginTime: data.beginTime)
+        case "slideIn":
+            return SlideIn(
+                from: textSlideDirection(named: data.direction ?? "fromLeft"),
+                duration: duration, beginTime: data.beginTime
+            )
+        case "scaleUp":
+            return ScaleUp(from: CGFloat(data.from ?? 0), duration: duration, beginTime: data.beginTime)
+        default:
+            // A kind written by a newer version. Dropped rather than guessed —
+            // the overlay still appears, without its entrance.
+            return nil
+        }
+    }
+
+    static func textSlideDirectionName(_ direction: SlideIn.Direction) -> String {
+        switch direction {
+        case .fromLeft: return "fromLeft"
+        case .fromRight: return "fromRight"
+        case .fromTop: return "fromTop"
+        case .fromBottom: return "fromBottom"
+        }
+    }
+
+    static func textSlideDirection(named name: String) -> SlideIn.Direction {
+        switch name {
+        case "fromRight": return .fromRight
+        case "fromTop": return .fromTop
+        case "fromBottom": return .fromBottom
+        default: return .fromLeft
         }
     }
 

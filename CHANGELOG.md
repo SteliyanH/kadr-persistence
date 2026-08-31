@@ -4,6 +4,35 @@ All notable changes to KadrPersistence will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-08-31
+
+### Fixed
+
+- **Text animations are saved instead of refused.** Every `TextAnimation` was
+  reported as ``Lossy``, on the reasoning that the protocol has an open set of
+  conformers. But the three kadr ships — `FadeIn`, `SlideIn`, `ScaleUp` — are
+  plain data, and reporting them meant a composition built with kadr's own
+  animation picker **could not be saved at all** under the default strict
+  encoding.
+
+  The reference app hit exactly that: adding a fade to a text overlay made
+  autosave throw, so the project silently stopped saving from that point on.
+  Found by asking whether the app could author any of the five lossy things —
+  the answer had been assumed rather than checked.
+
+  A conformer this version does not recognise is still reported rather than
+  guessed at.
+
+- The animation's duration is stored as a rational, like every other time in the
+  format, so a 1/30 s fade is still one frame after a round trip.
+
+### Notes
+
+- **Not a schema bump.** `textAnimation` is optional and appended, so a document
+  written by 0.1–0.3 decodes with `nil` — the property the format was designed
+  around, now exercised by a test that strips the field and reads the document
+  back.
+
 ## [0.3.0] - 2026-08-28
 
 ### Added
