@@ -18,6 +18,13 @@ let package = Package(
             dependencies: [.product(name: "Kadr", package: "kadr")],
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
-        .testTarget(name: "KadrPersistenceTests", dependencies: ["KadrPersistence"]),
+        .testTarget(
+            name: "KadrPersistenceTests",
+            dependencies: ["KadrPersistence"],
+            // Committed documents, decoded on every run. A format change that
+            // breaks an existing project fails here rather than in someone's
+            // library.
+            resources: [.copy("Fixtures")]
+        ),
     ]
 )
