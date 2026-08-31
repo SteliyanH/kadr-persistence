@@ -2,8 +2,8 @@
 
 Save a [kadr](https://github.com/SteliyanH/kadr) composition to a file, and open it again.
 
-[![Swift 6](https://img.shields.io/badge/Swift-6.0-orange.svg)](https://swift.org)
-[![Platforms](https://img.shields.io/badge/platforms-iOS%2017%20%7C%20macOS%2014%20%7C%20tvOS%2017%20%7C%20visionOS%201-lightgrey.svg)](https://github.com/SteliyanH/kadr-persistence)
+[![Swift versions](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSteliyanH%2Fkadr-persistence%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/SteliyanH/kadr-persistence)
+[![Platforms](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSteliyanH%2Fkadr-persistence%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/SteliyanH/kadr-persistence)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-yellow.svg)](https://buymeacoffee.com/steliyanh)
 
@@ -142,6 +142,19 @@ Swift 6 · iOS 17 · macOS 14 · tvOS 17 · visionOS 1 · kadr 1.0+
 ## Support
 
 If this saved you an afternoon: [buy me a coffee](https://buymeacoffee.com/steliyanh).
+
+## The kadr ecosystem
+
+| Package | Purpose |
+|---|---|
+| [`kadr`](https://github.com/SteliyanH/kadr) | The engine. Declarative video composition and export — clips, tracks, transitions, filters, overlays, keyframe animation. |
+| [`kadr-ui`](https://github.com/SteliyanH/kadr-ui) | SwiftUI components — preview, timeline, inspector, overlay host, keyframe editor. |
+| [`kadr-persistence`](https://github.com/SteliyanH/kadr-persistence) | Save a composition to a file and open it again. |
+| [`kadr-audio`](https://github.com/SteliyanH/kadr-audio) | Music library, voiceover recording, LUFS loudness. |
+| [`kadr-captions`](https://github.com/SteliyanH/kadr-captions) | SRT, VTT, iTT, ASS and SSA parsing and authoring. |
+| [`kadr-photos`](https://github.com/SteliyanH/kadr-photos) | Photos library integration. |
+
+And a reference application: [**Kadr Studio**](https://github.com/SteliyanH/kadr-reels-studio), a short-form vertical video editor built on all six.
 
 ## License
 
