@@ -27,10 +27,12 @@ Where this package is going, and what it is deliberately not doing.
 
 ## Open questions
 
-- Whether `TextAnimation` should become encodable upstream. Its three conformers
-  (`FadeIn`, `SlideIn`, `ScaleUp`) are plain data — it is the protocol that makes
-  them opaque. A `TextAnimationKind` enum in kadr would let all three round-trip
-  and leave only genuinely custom ones lossy.
+- ~~Whether `TextAnimation` should become encodable upstream.~~ **Answered in
+  0.4.0, and it needed no upstream change.** The three conformers are public
+  structs with public properties, so this package downcasts to each and encodes
+  it; only a conformer it does not recognise stays lossy. Worth remembering as a
+  general point: an existential is not automatically unencodable — it is
+  unencodable only where its conformers are.
 - ~~Whether `ChromaKey` should gain `init(color: ColorComponents, threshold:)`.~~
   **Answered: yes, and it shipped in kadr 1.0.** Decoding no longer detours
   through `PlatformColor`, which was lossy on macOS outside sRGB.

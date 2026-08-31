@@ -292,6 +292,47 @@ public struct TextStyleData: Codable, Sendable, Equatable {
 
 // MARK: - Overlays
 
+/// An overlay's entrance animation.
+///
+/// ``Kadr/TextAnimation`` is a protocol, so a document cannot name an arbitrary
+/// conformer — but the three kadr ships (`FadeIn`, `SlideIn`, `ScaleUp`) are
+/// plain data, and refusing to encode them meant refusing to save a project
+/// that used the animation picker at all. A conformer this version does not
+/// know is still reported as ``Lossy/Kind/textAnimation``.
+public struct TextAnimationData: Codable, Sendable, Equatable {
+
+    public init(
+        kind: String,
+        durationValue: Int64,
+        durationTimescale: Int32,
+        beginTime: Double,
+        from: Double? = nil,
+        direction: String? = nil
+    ) {
+        self.kind = kind
+        self.durationValue = durationValue
+        self.durationTimescale = durationTimescale
+        self.beginTime = beginTime
+        self.from = from
+        self.direction = direction
+    }
+
+    /// `fadeIn` | `slideIn` | `scaleUp`.
+    public let kind: String
+    /// Duration as a rational, for the same reason ``TimeData`` is one.
+    public let durationValue: Int64
+    public let durationTimescale: Int32
+    public let beginTime: Double
+    /// Starting opacity for `fadeIn`, starting scale for `scaleUp`.
+    public let from: Double?
+    /// `slideIn` only.
+    public let direction: String?
+
+    public var duration: TimeData {
+        TimeData(CMTime(value: durationValue, timescale: durationTimescale))
+    }
+}
+
 public struct TextOverlayData: Codable, Sendable, Equatable {
 
     public init(
@@ -302,7 +343,8 @@ public struct TextOverlayData: Codable, Sendable, Equatable {
         anchor: String,
         opacity: Double,
         layerID: String? = nil,
-        visibilityRange: TimeRangeData? = nil
+        visibilityRange: TimeRangeData? = nil,
+        textAnimation: TextAnimationData? = nil
     ) {
         self.text = text
         self.style = style
@@ -312,6 +354,7 @@ public struct TextOverlayData: Codable, Sendable, Equatable {
         self.opacity = opacity
         self.layerID = layerID
         self.visibilityRange = visibilityRange
+        self.textAnimation = textAnimation
     }
     public let text: String
     public let style: TextStyleData
@@ -321,6 +364,10 @@ public struct TextOverlayData: Codable, Sendable, Equatable {
     public let opacity: Double
     public let layerID: String?
     public let visibilityRange: TimeRangeData?
+    /// The entrance animation, when this version can represent it. Optional and
+    /// appended, so a document written before v0.4 decodes as `nil` rather than
+    /// failing — which is why this is not a schema bump.
+    public let textAnimation: TextAnimationData?
 }
 
 public struct ImageOverlayData: Codable, Sendable, Equatable {

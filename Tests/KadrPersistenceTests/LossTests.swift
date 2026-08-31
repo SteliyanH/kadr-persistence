@@ -2,6 +2,7 @@ import Testing
 import Foundation
 import CoreMedia
 import CoreImage
+import QuartzCore
 import Kadr
 @testable import KadrPersistence
 
@@ -129,10 +130,22 @@ struct LossTests {
         #expect(KadrCoding.lossyContent(in: video).contains { $0.kind == .image })
     }
 
-    @Test("A text animation is reported")
-    func textAnimationIsReported() {
+    @Test("A text animation kadr ships is not reported — it round-trips")
+    func stockTextAnimationIsNotReported() {
+        // Until v0.4 every animation was reported, which made a composition
+        // using kadr's own animation picker unsaveable under strict encoding.
         let video = Video { clip }
             .overlay(TextOverlay("Hi").id(LayerID("title")).animation(FadeIn(duration: 0.5)))
+        #expect(KadrCoding.lossyContent(in: video).isEmpty)
+    }
+
+    @Test("A text animation this version cannot represent is reported")
+    func unknownTextAnimationIsReported() {
+        struct Swirl: TextAnimation {
+            func makeAnimations(for layer: CALayer) -> [CAAnimation] { [] }
+        }
+        let video = Video { clip }
+            .overlay(TextOverlay("Hi").id(LayerID("title")).animation(Swirl()))
         let lost = KadrCoding.lossyContent(in: video)
         #expect(lost.contains { $0.kind == .textAnimation })
         #expect(lost.first { $0.kind == .textAnimation }?.location.contains("title") == true)
