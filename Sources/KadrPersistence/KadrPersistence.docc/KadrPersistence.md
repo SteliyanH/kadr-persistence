@@ -56,12 +56,16 @@ if losses.isEmpty {
 
 ### Images
 
+- <doc:StoringImages>
 - ``ImageStore``
+- ``FileImageStore``
+- ``PrefetchedImageStore``
 
 ### Articles
 
 - <doc:Completeness>
 - <doc:TheFormat>
+- <doc:StoringImages>
 
 ### The document format
 

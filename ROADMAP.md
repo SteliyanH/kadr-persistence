@@ -10,12 +10,11 @@ All three of the original pre-1.0 items shipped in 0.5.0. What remains:
   place; there is simply nothing yet that needs a migration, because every
   change so far has been an added optional field. The first genuine break gets
   a step, and a fixture of the version before it.
-- **Async image resolution.** ``ImageStore`` is synchronous, which fits files
-  and blobs but not a photo library: resolving a `PHAsset` means
-  `PHImageManager`, which is callback-based. A host wanting library-backed
-  images must pre-resolve them today. An `AsyncImageStore` alongside the
-  synchronous one is the likely shape, but it changes the encode path from
-  sync to async for everyone, so it wants a real caller before it is designed.
+- ~~**Async image resolution.**~~ **Answered in 0.6.0, and the answer was not an
+  async `ImageStore`.** Making `encode`/`decode` async would have imposed it on
+  every consumer, including those with no images, for the one case that needed
+  it. `PrefetchedImageStore` resolves first and encodes second, leaving the
+  `await` in the layer that already had one.
 - **Deletion policy for a shared store.** ``FileImageStore/prune(keeping:)``
   takes the tokens of one composition. Two projects sharing a directory would
   each prune the other's images. Documented, not yet solved — the fix is

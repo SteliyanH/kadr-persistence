@@ -4,6 +4,33 @@ All notable changes to KadrPersistence will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.6.0] - 2026-08-31
+
+### Added
+
+- **`PrefetchedImageStore`** — the answer to an asynchronous image source, and
+  it is not an async `ImageStore`.
+
+  Resolving a `PHAsset` means `PHImageManager`, which is callback-based, while
+  `ImageStore` is synchronous. The obvious fix — async `encode` / `decode` —
+  makes the encode path async for *every* consumer, including the many with no
+  images at all, to serve the one case that needs it. So instead: resolve first,
+  then encode, with the `await` left in the layer that already had one.
+
+  `PrefetchedImageStore.tokens(in:)` walks a decoded document and returns every
+  image token it refers to — which is what makes this work, because it means the
+  tokens are knowable *before* the composition is built. The chicken-and-egg
+  problem is only apparent.
+
+  An image the store was not given is refused rather than issued an invented
+  token: a made-up token encodes cleanly and resolves to nothing on the next
+  open, which is the silent loss this package exists to prevent.
+
+- **<doc:StoringImages>** — a DocC article on where a composition's pictures
+  live, covering both stores, the relative-token hazard, and the one rule for
+  writing your own: a token must be stable across saves, or every save rewrites
+  the whole file.
+
 ## [0.5.0] - 2026-08-31
 
 The storage layer finished: the three pre-1.0 roadmap items, shipped.
