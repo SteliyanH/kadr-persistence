@@ -4,6 +4,56 @@ All notable changes to KadrPersistence will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] - 2026-08-31
+
+The storage layer finished: the three pre-1.0 roadmap items, shipped.
+
+### Added
+
+- **`FileImageStore`** — the store most apps would otherwise write themselves.
+  Images live as files in a directory you nominate; the project references them.
+
+  Tokens are **relative** — `file:<name>.png`, resolved against the store's
+  directory — and that is the substantive detail, not tidiness. An iOS app's
+  container is `/var/mobile/Containers/Data/Application/<UUID>/`, and **that
+  UUID changes**: on reinstall, on restore from backup, sometimes across an OS
+  update. An absolute path written into a project on Monday can point nowhere on
+  Friday with the project itself perfectly intact. Absolute tokens from
+  hand-rolled stores still resolve, so existing projects keep opening.
+
+  Names are content hashes, so the same image is stored once and a token is
+  stable across saves. `prune(keeping:)` deletes what a composition no longer
+  refers to.
+
+- **`SchemaMigrator`** — the migration mechanism, ahead of its first use.
+  Steps operate on the raw JSON object rather than on `KadrDocument`, because an
+  old document by definition does not decode into today's types — a mechanism
+  that requires decoding first can only handle the changes that did not need it.
+
+  A gap in the chain is **refused**, not skipped: treating a missing step as a
+  no-op hands back a document nobody migrated, which then gets saved over the
+  original.
+
+  `registered` is empty and a test asserts that, because it is a statement about
+  the format's history rather than a placeholder — every change so far has been
+  an added optional field.
+
+- **A committed fixture corpus.** A broad schema-1 document — every clip kind, a
+  nested track, filters with identities, animations, audio ramps, all three
+  overlay kinds, crop, captions — decoded on every run, including a
+  **byte-for-byte re-encode**. Every other test here encodes and decodes with
+  today's code, so both sides move together and neither can see a change that
+  breaks *yesterday's* files. This one can.
+
+  The generator that writes the corpus is disabled on purpose: a suite that can
+  rewrite its own evidence proves nothing.
+
+### Notes
+
+- `PersistenceError` gains `imageNotEncodable`, `imageUnresolvable(token:)` and
+  `migrationUnavailable(from:to:)`, all with recovery suggestions where there is
+  one to give.
+
 ## [0.4.0] - 2026-08-31
 
 ### Fixed
