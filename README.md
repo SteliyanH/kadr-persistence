@@ -2,10 +2,13 @@
 
 Save a [kadr](https://github.com/SteliyanH/kadr) composition to a file, and open it again.
 
+[![CI](https://github.com/SteliyanH/kadr-persistence/actions/workflows/ci.yml/badge.svg)](https://github.com/SteliyanH/kadr-persistence/actions/workflows/ci.yml)
 [![Swift versions](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSteliyanH%2Fkadr-persistence%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/SteliyanH/kadr-persistence)
 [![Platforms](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSteliyanH%2Fkadr-persistence%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/SteliyanH/kadr-persistence)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-yellow.svg)](https://buymeacoffee.com/steliyanh)
+
+**[API documentation →](https://swiftpackageindex.com/SteliyanH/kadr-persistence/documentation)**  ·  built and hosted by the Swift Package Index for every release.
 
 ```swift
 let data = try KadrCoding.data(for: video)      // save
@@ -129,7 +132,7 @@ and it caught six missing fields on its first run.
 ## Installation
 
 ```swift
-.package(url: "https://github.com/SteliyanH/kadr-persistence.git", .upToNextMinor(from: "0.1.0"))
+.package(url: "https://github.com/SteliyanH/kadr-persistence.git", .upToNextMinor(from: "0.6.0"))
 ```
 
 `.upToNextMinor` rather than `from:` — this is pre-1.0, where `from:` would accept
@@ -158,4 +161,9 @@ And a reference application: [**Kadr Studio**](https://github.com/SteliyanH/kadr
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+Apache-2.0. See [LICENSE](LICENSE) — the same licence as the rest of the kadr
+ecosystem.
+
+Contributions are accepted under the [Contributor License Agreement](CLA.md),
+signed once and covering all future contributions. It does not transfer
+ownership — you keep the copyright in your work.
