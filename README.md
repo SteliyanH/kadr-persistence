@@ -138,7 +138,7 @@ and it caught six missing fields on its first run.
 
 <!-- readme-snippets: skip -->
 ```swift
-.package(url: "https://github.com/SteliyanH/kadr-persistence.git", .upToNextMinor(from: "0.6.0"))
+.package(url: "https://github.com/SteliyanH/kadr-persistence.git", .upToNextMinor(from: "0.6.1"))
 ```
 
 > **Use `.upToNextMinor`, not `from:`.** `from:` means `.upToNextMajor`, and SwiftPM
