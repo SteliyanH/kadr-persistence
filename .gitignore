@@ -2,4 +2,11 @@
 /.build
 /Packages
 xcuserdata/
-.swiftpm/
+# Everything SwiftPM and Xcode generate, except the one shared scheme CI
+# builds (KadrPersistence-Package: the library and the README examples).
+/.swiftpm/*
+!/.swiftpm/xcode/
+/.swiftpm/xcode/*
+!/.swiftpm/xcode/xcshareddata/
+/.swiftpm/xcode/xcshareddata/*
+!/.swiftpm/xcode/xcshareddata/xcschemes/

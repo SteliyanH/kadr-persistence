@@ -1,4 +1,4 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 6.2
 import PackageDescription
 
 let package = Package(
@@ -16,6 +16,15 @@ let package = Package(
         .target(
             name: "KadrPersistence",
             dependencies: [.product(name: "Kadr", package: "kadr")],
+            swiftSettings: [.swiftLanguageMode(.v6)]
+        ),
+        // The README's examples, compiled so they cannot drift from the API they
+        // demonstrate. Tools/readme-snippets.sh generates ReadmeSnippets.swift
+        // from README.md; CI fails when that copy is stale. Not a product.
+        .target(
+            name: "KadrPersistenceExamples",
+            dependencies: ["KadrPersistence", .product(name: "Kadr", package: "kadr")],
+            path: "Examples",
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         .testTarget(

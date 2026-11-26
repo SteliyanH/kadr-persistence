@@ -42,7 +42,7 @@ holds content a file cannot represent:
 
 ```swift
 do {
-    let data = try KadrCoding.data(for: video)
+    try KadrCoding.data(for: video).write(to: projectURL)
 } catch let error as PersistenceError {
     print(error.localizedDescription)
     // "A custom compositor on clip “hero” can't be saved — it's code, not data."
@@ -73,7 +73,7 @@ Five things cannot be represented, and all five are reported rather than dropped
 | `Compositor` on a clip | per-frame Core Image code |
 | `MultiInputCompositor` on the composition | the same |
 | `TimingFunction.custom` | an easing closure |
-| `TextAnimation` on an overlay | an existential with open-ended conformers |
+| A custom `TextAnimation` on an overlay | a conformer other than kadr's `FadeIn`, `SlideIn` and `ScaleUp`, which are stored |
 | A `PlatformImage` with no `ImageStore` | pixels with no identity to write down |
 
 ## Images
@@ -83,17 +83,22 @@ write that: embedding the bytes turns a ten-photo slideshow into a hundred
 megabytes of base64, and every editor worth the name references its media rather
 than swallowing it.
 
-So the identity comes from you — the only layer that knows it:
+So the identity comes from you — the only layer that knows it — as an
+`ImageStore`. Most apps want `FileImageStore`, which keeps the images as files in
+a directory you nominate:
 
 ```swift
-struct PhotoLibraryStore: ImageStore {
-    func token(for image: PlatformImage) throws -> String { /* the asset's local id */ }
-    func image(for token: String) throws -> PlatformImage { /* fetch it back */ }
-}
-
-let data = try KadrCoding.data(for: video, images: PhotoLibraryStore())
-let restored = try KadrCoding.video(from: data, images: PhotoLibraryStore())
+let images = try FileImageStore(directory: mediaDirectory)
+let data = try KadrCoding.data(for: video, images: images)
+let restored = try KadrCoding.video(from: data, images: images)
 ```
+
+Its tokens are content hashes relative to that directory, so an image used twice
+is stored once, and a project still opens after a reinstall moves the app's
+container. For an asynchronous source such as the photo library, use
+`PrefetchedImageStore`: resolve the images first, then encode or decode.
+[Storing images](https://swiftpackageindex.com/SteliyanH/kadr-persistence/documentation/kadrpersistence/storingimages)
+covers both, and what to get right when you write your own.
 
 Tokens are opaque here: any stable string works, as long as the same store
 resolves it later. Without a store, images are reported as lossy — never written
@@ -131,16 +136,19 @@ and it caught six missing fields on its first run.
 
 ## Installation
 
+<!-- readme-snippets: skip -->
 ```swift
-.package(url: "https://github.com/SteliyanH/kadr-persistence.git", .upToNextMinor(from: "0.6.0"))
+.package(url: "https://github.com/SteliyanH/kadr-persistence.git", .upToNextMinor(from: "0.6.1"))
 ```
 
-`.upToNextMinor` rather than `from:` — this is pre-1.0, where `from:` would accept
-breaking changes.
+> **Use `.upToNextMinor`, not `from:`.** `from:` means `.upToNextMajor`, and SwiftPM
+> does not special-case `0.x` — so `from: "0.6.0"` would accept every future 0.x
+> release including breaking ones. (This package's own kadr dependency uses
+> `from:`, because kadr is past 1.0 and its minors no longer break.)
 
 ## Requirements
 
-Swift 6 · iOS 17 · macOS 14 · tvOS 17 · visionOS 1 · kadr 1.0+
+Xcode 26 (Swift 6.2) · iOS 17 · macOS 14 · tvOS 17 · visionOS 1 · kadr 1.0+
 
 ## Support
 

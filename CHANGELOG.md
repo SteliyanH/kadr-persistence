@@ -4,6 +4,28 @@ All notable changes to KadrPersistence will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+## [0.6.1] - 2026-11-27
+
+### Changed
+
+- **The manifest declares Swift tools 6.2**, the version kadr requires. It
+  said 6.0, which no toolchain could honour: kadr cannot be built before
+  Xcode 26. Nothing changes for anyone already building.
+
+### Documentation
+
+- **Every README example compiles.** The image-store example did not: its
+  methods had comments for bodies. It also showed the photo library as a
+  synchronous `ImageStore`, which is the case `PrefetchedImageStore` exists
+  for, so it now shows `FileImageStore` and points to the other. CI compiles
+  every block in an Examples target, on macOS and iOS, so a README change
+  that breaks an example fails the build.
+- The README's requirements now say Xcode 26 (Swift 6.2), which kadr needs
+  whatever this manifest declares. The table of what cannot be saved now says
+  that kadr's own text animations are stored, as they have been since 0.4.0.
+
 ## [0.6.0] - 2026-08-31
 
 ### Added
