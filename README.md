@@ -150,9 +150,6 @@ and it caught six missing fields on its first run.
 
 Xcode 26 (Swift 6.2) · iOS 17 · macOS 14 · tvOS 17 · visionOS 1 · kadr 1.0+
 
-This package's manifest declares Swift tools 6.0, but kadr cannot be built with
-Xcode 16: the image types it stores are only `Sendable` in the Xcode 26 SDKs.
-
 ## Support
 
 If this saved you an afternoon: [buy me a coffee](https://buymeacoffee.com/steliyanh).

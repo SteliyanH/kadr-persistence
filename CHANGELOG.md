@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+### Changed
+
+- **The manifest declares Swift tools 6.2**, the version kadr requires. It
+  said 6.0, which no toolchain could honour: kadr cannot be built before
+  Xcode 26. Nothing changes for anyone already building.
+
 ### Documentation
 
 - **Every README example compiles.** The image-store example did not: its
